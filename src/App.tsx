@@ -15,6 +15,7 @@ import {
   SiTailwindcss,
   SiTypescript,
 } from 'react-icons/si'
+import { FiX } from 'react-icons/fi'
 
 import Navbar from './components/Navbar'
 import banner from '../assets/banner-stack.png'
@@ -80,6 +81,9 @@ const gradientClass =
 function App() {
   const [technologies, setTechnologies] = useState<Technology[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedTechnologies, setSelectedTechnologies] = useState<
+    Technology[]
+  >([])
 
   useEffect(() => {
     fetch('/data/technologies.json')
@@ -87,6 +91,26 @@ function App() {
       .then((data) => setTechnologies(data))
       .finally(() => setLoading(false))
   }, [])
+
+  const handleAddToStack = (technology: Technology) => {
+    setSelectedTechnologies((current) => {
+      if (current.some((item) => item.id === technology.id)) {
+        return current
+      }
+
+      return [...current, technology]
+    })
+  }
+
+  const handleRemove = (id: number) => {
+    setSelectedTechnologies((current) =>
+      current.filter((item) => item.id !== id),
+    )
+  }
+
+  const handleRemoveAll = () => {
+    setSelectedTechnologies([])
+  }
 
   if (loading) {
     return (
@@ -165,6 +189,10 @@ function App() {
                 const Icon =
                   iconMap[technology.icon as keyof typeof iconMap]
 
+                const isSelected = selectedTechnologies.some(
+                  (item) => item.id === technology.id,
+                )
+
                 return (
                   <div
                     key={technology.id}
@@ -214,8 +242,16 @@ function App() {
                     </div>
 
                     {/* Add Button */}
-                    <button className="mt-3 w-full rounded-md bg-gray-950 py-2 text-[10px] font-medium text-white transition hover:bg-gray-800">
-                      Add to Stack
+                    <button
+                      onClick={() => handleAddToStack(technology)}
+                      disabled={isSelected}
+                      className={`mt-3 w-full rounded-md py-2 text-[10px] font-medium transition ${
+                        isSelected
+                          ? 'cursor-not-allowed bg-gray-200 text-gray-500'
+                          : 'bg-gray-950 text-white hover:bg-gray-800'
+                      }`}
+                    >
+                      {isSelected ? '✓ Added to Stack' : 'Add to Stack'}
                     </button>
                   </div>
                 )
@@ -229,24 +265,69 @@ function App() {
               </h3>
 
               <p className="mt-1 text-[9px] text-gray-400">
-                0 Technology Selected
+                {selectedTechnologies.length} Technology Selected
               </p>
 
-              <div className="mt-4 flex min-h-[100px] items-center justify-center rounded-lg border border-dashed border-gray-200">
-                <div className="text-center">
-                  <p className="text-xs font-medium text-gray-400">
-                    No technologies selected yet.
-                  </p>
+              {selectedTechnologies.length === 0 ? (
+                <div className="mt-4 flex min-h-[100px] items-center justify-center rounded-lg border border-dashed border-gray-200">
+                  <div className="text-center">
+                    <p className="text-xs font-medium text-gray-400">
+                      No technologies selected yet.
+                    </p>
 
-                  <p className="mt-1 text-[10px] text-gray-300">
-                    Your stack is empty.
-                  </p>
+                    <p className="mt-1 text-[10px] text-gray-300">
+                      Your stack is empty.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-4 space-y-2">
+                  {selectedTechnologies.map((technology) => {
+                    const Icon =
+                      iconMap[technology.icon as keyof typeof iconMap]
 
-              <button className="mt-4 w-full rounded-md border border-red-200 py-2 text-[10px] font-medium text-red-500">
-                Remove All
-              </button>
+                    return (
+                      <div
+                        key={technology.id}
+                        className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Icon
+                            className={`text-lg ${iconColors[technology.name]}`}
+                          />
+
+                          <div>
+                            <p className="text-xs font-medium text-gray-800">
+                              {technology.name}
+                            </p>
+
+                            <p className="text-[9px] text-gray-400">
+                              {technology.category}
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleRemove(technology.id)}
+                          className="text-gray-400 hover:text-red-500"
+                          aria-label={`Remove ${technology.name}`}
+                        >
+                          <FiX className="text-sm" />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {selectedTechnologies.length > 0 && (
+                <button
+                  onClick={handleRemoveAll}
+                  className="mt-4 w-full rounded-md border border-red-200 py-2 text-[10px] font-medium text-red-500 hover:bg-red-50"
+                >
+                  Remove All
+                </button>
+              )}
             </aside>
           </div>
         </div>
