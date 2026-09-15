@@ -3,6 +3,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import banner from '../assets/banner-stack.png'
 
 type Technology = {
@@ -334,6 +335,7 @@ function App() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   )
 }
