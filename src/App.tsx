@@ -1,21 +1,6 @@
 import { useEffect, useState } from 'react'
-import {
-  FaDocker,
-  FaJava,
-  FaNodeJs,
-  FaReact,
-  FaVuejs,
-} from 'react-icons/fa'
-import {
-  SiJavascript,
-  SiNextdotjs,
-  SiPostgresql,
-  SiRedis,
-  SiSvelte,
-  SiTailwindcss,
-  SiTypescript,
-} from 'react-icons/si'
-import { FiX } from 'react-icons/fi'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import Navbar from './components/Navbar'
 import banner from '../assets/banner-stack.png'
@@ -29,36 +14,6 @@ type Technology = {
   rating: number
   difficulty: string
   badge: string
-}
-
-const iconMap = {
-  FaReact,
-  FaVuejs,
-  SiSvelte,
-  SiNextdotjs,
-  FaNodeJs,
-  SiPostgresql,
-  SiRedis,
-  SiJavascript,
-  SiTypescript,
-  FaJava,
-  SiTailwindcss,
-  FaDocker,
-}
-
-const iconColors: Record<string, string> = {
-  React: 'text-cyan-400',
-  'Vue.js': 'text-green-600',
-  Svelte: 'text-orange-500',
-  'Next.js': 'text-black',
-  'Node.js': 'text-green-500',
-  PostgreSQL: 'text-blue-600',
-  Redis: 'text-red-500',
-  JavaScript: 'text-yellow-500',
-  TypeScript: 'text-blue-600',
-  Java: 'text-sky-500',
-  'Tailwind CSS': 'text-cyan-500',
-  Docker: 'text-blue-500',
 }
 
 const badgeStyles: Record<string, string> = {
@@ -87,46 +42,77 @@ function App() {
 
   useEffect(() => {
     fetch('/data/technologies.json')
-      .then((res) => res.json())
-      .then((data) => setTechnologies(data))
-      .finally(() => setLoading(false))
+      .then((response) => response.json())
+      .then((data: Technology[]) => {
+        setTechnologies(data)
+      })
+      .catch(() => {
+        toast.error('Failed to load technologies.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [])
 
   const handleAddToStack = (technology: Technology) => {
-    setSelectedTechnologies((current) => {
-      if (current.some((item) => item.id === technology.id)) {
-        return current
-      }
+    const alreadySelected = selectedTechnologies.some(
+      (item) => item.id === technology.id,
+    )
 
-      return [...current, technology]
-    })
+    if (alreadySelected) {
+      toast.warning(`${technology.name} is already in your stack!`)
+      return
+    }
+
+    setSelectedTechnologies((current) => [
+      ...current,
+      technology,
+    ])
+
+    toast.success(`${technology.name} added to your stack!`)
   }
 
   const handleRemove = (id: number) => {
+    const technology = selectedTechnologies.find(
+      (item) => item.id === id,
+    )
+
     setSelectedTechnologies((current) =>
       current.filter((item) => item.id !== id),
     )
+
+    if (technology) {
+      toast.info(`${technology.name} removed from your stack!`)
+    }
   }
 
   const handleRemoveAll = () => {
+    if (selectedTechnologies.length === 0) {
+      return
+    }
+
     setSelectedTechnologies([])
+    toast.info('All technologies removed from your stack!')
   }
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-white">
         <span className="loading loading-spinner loading-lg text-pink-500"></span>
       </div>
     )
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-white text-gray-900">
+      <ToastContainer position="top-right" />
+
       <Navbar />
 
       {/* Hero Section */}
       <section className="bg-white">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-10 px-6 py-16 md:flex-row md:py-20">
+          {/* Hero Content */}
           <div className="max-w-2xl">
             <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-5xl">
               Build Your Ideal
@@ -143,19 +129,24 @@ function App() {
               your next project.
             </p>
 
-            <div className="mt-8 flex items-center gap-3">
-              <button
-                className={`${gradientClass} rounded-md px-5 py-2.5 text-sm font-medium text-white`}
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a
+                href="#technologies"
+                className={`${gradientClass} rounded-md px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90`}
               >
                 Explore Technologies
-              </button>
+              </a>
 
-              <button className="rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-600">
+              <a
+                href="#technologies"
+                className="rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-600 transition hover:border-pink-300 hover:text-pink-500"
+              >
                 Learn More
-              </button>
+              </a>
             </div>
           </div>
 
+          {/* Hero Image */}
           <div className="flex justify-center">
             <img
               src={banner}
@@ -167,7 +158,10 @@ function App() {
       </section>
 
       {/* Technology Section */}
-      <section className="bg-white px-6 py-12 md:py-16">
+      <section
+        id="technologies"
+        className="bg-white px-6 py-12 md:py-16"
+      >
         <div className="mx-auto max-w-7xl">
           {/* Section Heading */}
           <div>
@@ -181,14 +175,11 @@ function App() {
             </p>
           </div>
 
-          {/* Cards + Your Stack */}
+          {/* Technology Cards + Your Stack */}
           <div className="mt-8 grid gap-6 lg:grid-cols-4">
             {/* Technology Cards */}
             <div className="grid gap-5 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
               {technologies.map((technology) => {
-                const Icon =
-                  iconMap[technology.icon as keyof typeof iconMap]
-
                 const isSelected = selectedTechnologies.some(
                   (item) => item.id === technology.id,
                 )
@@ -196,26 +187,33 @@ function App() {
                 return (
                   <div
                     key={technology.id}
-                    className="flex min-h-[190px] flex-col rounded-xl border border-gray-100 bg-white p-4 shadow-sm"
+                    className={`flex min-h-[190px] flex-col rounded-xl border bg-white p-4 shadow-sm transition ${
+                      isSelected
+                        ? 'border-pink-400'
+                        : 'border-gray-100'
+                    }`}
                   >
                     {/* Icon + Badge */}
                     <div className="flex items-start justify-between">
                       <div className="flex h-9 w-9 items-center justify-center">
-                        <Icon
-                          className={`text-2xl ${iconColors[technology.name]}`}
+                        <img
+                          src={technology.icon}
+                          alt={`${technology.name} icon`}
+                          className="h-8 w-8 object-contain"
                         />
                       </div>
 
                       <span
                         className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${
-                          badgeStyles[technology.badge]
+                          badgeStyles[technology.badge] ??
+                          'bg-gray-50 text-gray-600'
                         }`}
                       >
                         {technology.badge}
                       </span>
                     </div>
 
-                    {/* Name */}
+                    {/* Technology Name */}
                     <h3 className="mt-3 text-sm font-bold text-gray-900">
                       {technology.name}
                     </h3>
@@ -241,24 +239,26 @@ function App() {
                       </span>
                     </div>
 
-                    {/* Add Button */}
+                    {/* Add To Stack Button */}
                     <button
                       onClick={() => handleAddToStack(technology)}
                       disabled={isSelected}
                       className={`mt-3 w-full rounded-md py-2 text-[10px] font-medium transition ${
                         isSelected
-                          ? 'cursor-not-allowed bg-gray-200 text-gray-500'
+                          ? 'cursor-not-allowed bg-pink-50 text-pink-500'
                           : 'bg-gray-950 text-white hover:bg-gray-800'
                       }`}
                     >
-                      {isSelected ? '✓ Added to Stack' : 'Add to Stack'}
+                      {isSelected
+                        ? '✓ Added to Stack'
+                        : 'Add to Stack'}
                     </button>
                   </div>
                 )
               })}
             </div>
 
-            {/* Your Stack Sidebar */}
+            {/* Your Stack */}
             <aside className="h-fit rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900">
                 Your Stack
@@ -268,6 +268,7 @@ function App() {
                 {selectedTechnologies.length} Technology Selected
               </p>
 
+              {/* Empty State */}
               {selectedTechnologies.length === 0 ? (
                 <div className="mt-4 flex min-h-[100px] items-center justify-center rounded-lg border border-dashed border-gray-200">
                   <div className="text-center">
@@ -281,49 +282,50 @@ function App() {
                   </div>
                 </div>
               ) : (
+                /* Selected Technologies */
                 <div className="mt-4 space-y-2">
-                  {selectedTechnologies.map((technology) => {
-                    const Icon =
-                      iconMap[technology.icon as keyof typeof iconMap]
+                  {selectedTechnologies.map((technology) => (
+                    <div
+                      key={technology.id}
+                      className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={technology.icon}
+                          alt={`${technology.name} icon`}
+                          className="h-6 w-6 object-contain"
+                        />
 
-                    return (
-                      <div
-                        key={technology.id}
-                        className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Icon
-                            className={`text-lg ${iconColors[technology.name]}`}
-                          />
+                        <div>
+                          <p className="text-xs font-medium text-gray-800">
+                            {technology.name}
+                          </p>
 
-                          <div>
-                            <p className="text-xs font-medium text-gray-800">
-                              {technology.name}
-                            </p>
-
-                            <p className="text-[9px] text-gray-400">
-                              {technology.category}
-                            </p>
-                          </div>
+                          <p className="text-[9px] text-gray-400">
+                            {technology.category}
+                          </p>
                         </div>
-
-                        <button
-                          onClick={() => handleRemove(technology.id)}
-                          className="text-gray-400 hover:text-red-500"
-                          aria-label={`Remove ${technology.name}`}
-                        >
-                          <FiX className="text-sm" />
-                        </button>
                       </div>
-                    )
-                  })}
+
+                      <button
+                        onClick={() =>
+                          handleRemove(technology.id)
+                        }
+                        className="text-lg leading-none text-gray-400 transition hover:text-red-500"
+                        aria-label={`Remove ${technology.name}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
 
+              {/* Remove All */}
               {selectedTechnologies.length > 0 && (
                 <button
                   onClick={handleRemoveAll}
-                  className="mt-4 w-full rounded-md border border-red-200 py-2 text-[10px] font-medium text-red-500 hover:bg-red-50"
+                  className="mt-4 w-full rounded-md border border-red-200 py-2 text-[10px] font-medium text-red-500 transition hover:bg-red-50"
                 >
                   Remove All
                 </button>
@@ -332,7 +334,7 @@ function App() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }
 
