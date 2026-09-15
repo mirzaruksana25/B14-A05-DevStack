@@ -112,10 +112,11 @@ function App() {
 
       {/* Hero Section */}
       <section className="bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-10 px-6 py-16 md:flex-row md:py-20">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-4 py-12 sm:px-6 sm:py-16 md:flex-row md:gap-10 md:py-20">
+          
           {/* Hero Content */}
-          <div className="max-w-2xl">
-            <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-5xl">
+          <div className="w-full max-w-2xl">
+            <h1 className="text-4xl font-bold leading-tight text-gray-900 sm:text-5xl">
               Build Your Ideal
               <span
                 className={`block ${gradientClass} bg-clip-text text-transparent`}
@@ -148,11 +149,11 @@ function App() {
           </div>
 
           {/* Hero Image */}
-          <div className="flex justify-center">
+          <div className="flex w-full justify-center md:w-auto">
             <img
               src={banner}
               alt="Development Stack"
-              className="w-64 md:w-80 lg:w-[360px]"
+              className="w-56 sm:w-64 md:w-80 lg:w-[360px]"
             />
           </div>
         </div>
@@ -161,12 +162,13 @@ function App() {
       {/* Technology Section */}
       <section
         id="technologies"
-        className="bg-white px-6 py-12 md:py-16"
+        className="bg-white px-4 py-10 sm:px-6 sm:py-12 md:py-16"
       >
         <div className="mx-auto max-w-7xl">
+          
           {/* Section Heading */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">
+            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
               Explore the{' '}
               <span className="text-pink-500">Technologies</span>
             </h2>
@@ -177,7 +179,8 @@ function App() {
           </div>
 
           {/* Technology Cards + Your Stack */}
-          <div className="mt-8 grid gap-6 lg:grid-cols-4">
+          <div className="mt-8 grid gap-5 md:gap-6 lg:grid-cols-4">
+            
             {/* Technology Cards */}
             <div className="grid gap-5 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
               {technologies.map((technology) => {
@@ -266,7 +269,11 @@ function App() {
               </h3>
 
               <p className="mt-1 text-[9px] text-gray-400">
-                {selectedTechnologies.length} Technology Selected
+                {selectedTechnologies.length}{' '}
+                {selectedTechnologies.length === 1
+                  ? 'Technology'
+                  : 'Technologies'}{' '}
+                Selected
               </p>
 
               {/* Empty State */}
@@ -335,6 +342,7 @@ function App() {
           </div>
         </div>
       </section>
+
       <Footer />
     </div>
   )

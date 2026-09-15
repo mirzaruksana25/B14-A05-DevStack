@@ -9,7 +9,7 @@ function Navbar() {
       <div className="mx-auto max-w-7xl px-4">
 
         {/* Navbar Main */}
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-16 items-center justify-between gap-2">
 
           {/* Mobile Hamburger */}
           <button
@@ -21,72 +21,78 @@ function Navbar() {
           </button>
 
           {/* Logo */}
-          <a href="#" className="flex items-center">
+          <a href="#" className="flex shrink-0 items-center">
             <img
               src={logo}
               alt="Dev Stack"
-              className="w-28 md:w-40"
+              className="w-28 md:w-32 lg:w-40"
             />
           </a>
 
           {/* Desktop Menu */}
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-4 md:flex lg:gap-6">
+
             <a
               href="#"
-              className="font-medium text-pink-500"
+              className="whitespace-nowrap font-medium text-pink-500"
             >
               Home
             </a>
 
             <a
-              href="#"
-              className="text-gray-700 hover:text-pink-500"
+              href="#technologies"
+              className="whitespace-nowrap text-gray-700 hover:text-pink-500"
             >
               Technologies
             </a>
 
             <a
               href="#"
-              className="text-gray-700 hover:text-pink-500"
+              className="whitespace-nowrap text-gray-700 hover:text-pink-500"
             >
               Projects
             </a>
 
             <a
               href="#"
-              className="text-gray-700 hover:text-pink-500"
+              className="whitespace-nowrap text-gray-700 hover:text-pink-500"
             >
               About
             </a>
 
             <a
               href="#"
-              className="text-gray-700 hover:text-pink-500"
+              className="whitespace-nowrap text-gray-700 hover:text-pink-500"
             >
               Contact
             </a>
+
           </div>
 
           {/* Desktop Buttons */}
-          <div className="hidden items-center gap-4 md:flex">
-            <button className="text-gray-700 hover:text-pink-500">
+          <div className="hidden shrink-0 items-center gap-2 md:flex lg:gap-4">
+
+            <button className="whitespace-nowrap text-sm text-gray-700 hover:text-pink-500">
               Sign In
             </button>
 
-            <button className="rounded-full bg-pink-500 px-5 py-2 text-white hover:bg-pink-600">
+            <button className="whitespace-nowrap rounded-full bg-pink-500 px-4 py-2 text-sm text-white hover:bg-pink-600">
               Sign Up
             </button>
+
           </div>
 
           {/* Mobile Right Buttons */}
-          <div className="flex items-center gap-2 md:hidden">
-            <button className="text-sm text-gray-700">
+          <div className="flex shrink-0 items-center gap-2 md:hidden">
+
+            <button className="whitespace-nowrap text-sm text-gray-700">
               Sign In
             </button>
 
-            <button className="rounded-full bg-pink-500 px-3 py-1.5 text-xs text-white">
+            <button className="whitespace-nowrap rounded-full bg-pink-500 px-3 py-1.5 text-xs text-white">
               Sign Up
             </button>
+
           </div>
 
         </div>
@@ -104,7 +110,7 @@ function Navbar() {
               </a>
 
               <a
-                href="#"
+                href="#technologies"
                 className="text-gray-700"
               >
                 Technologies
